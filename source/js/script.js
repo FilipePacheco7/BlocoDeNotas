@@ -7,9 +7,11 @@ let btnSaveNote = document.querySelector("#btn-save-note"); //icone para salvar 
 let btnCloseModal = document.querySelector("#btn-close-note");//icone para fechar modal de edição de nota.
 
 //++++++++++++++  EVENTOS +++++++++++++++//
+
 addNote.addEventListener('click', (evt)=> {
   evt.preventDefault();
   modal.style.display='block';
+  console.log(notes);
   notes.style.display = 'none';
   addNote.style.display = 'none'; 
 });
@@ -24,17 +26,43 @@ btnCloseModal.addEventListener('click', (evt) =>{
 btnSaveNote.addEventListener('click', (evt) => {
   evt.preventDefault();
   let objNote = {
-    id: document.querySelector("#input-id").value,
-    title:document.querySelector("#input-title").value,
-    content:document.querySelector("#input-content").value,
+    id: document.querySelector("#input-id").value.trim(),
+    title:document.querySelector("#input-title").value.trim(),
+    content:document.querySelector("#input-content").value.trim()
   };
   console.log(objNote);
   saveNote(objNote);
 });
 
+  // divCard.addEventListener('click', (evt) => {
+
+  // })
+
+
 //++++++++++++++  FUNÇÕES +++++++++++++++//
 
   const saveNote = (note) => {
+    let listNotes = loadNotes();
+
+    if(note.id.length < 1){
+      note.id = new Date().getTime();
+      document.querySelector('#input-id').value = note.id;
+      listNotes.push(note);
+    } else {
+      console.log(note.id);
+      listNotes.forEach((item, i) => {
+          if (item.id == note.id) {
+            listNotes[i] = note;
+          }
+      }); 
+    }
+    note.lastTime = new Date().getTime();
+    console.log(listNotes);
+    listNotes = JSON.stringify(listNotes);
+    localStorage.setItem('notes', listNotes);
+  };
+
+  const loadNotes = () => {
     let listNotes = localStorage.getItem('notes');
     console.log(listNotes);
     if (!listNotes){
@@ -42,19 +70,36 @@ btnSaveNote.addEventListener('click', (evt) => {
     } else {
       listNotes = JSON.parse(listNotes);
     }
+    return listNotes;
+  }
 
+  const listNotes = () => {
+    let listNotes = loadNotes();
+    listNotes.forEach((item) => {
+      let divCard = document.createElement('div');
+      divCard.className = 'card';
+      divCard.style.width = '18rem';
+      notes.appendChild(divCard);
 
-    if(note.id.length < 1){
-      note.id = new Date().getTime();
-      document.querySelector('#input-id').value = note.id;
-    } else {
-      console.log(note.id);
-    }
+      let divCardBody = document.createElement('div');
+      divCardBody.className = "card-body";
+      divCard.appendChild(divCardBody);
+      
+      let h1 = document.createElement('h1');
+      h1.innerText = item.title;
+      divCardBody.appendChild(h1);
 
-    listNotes.push(note);
-    console.log(listNotes);
-    listNotes = JSON.stringify(listNotes);
-    localStorage.setItem('notes', listNotes);
+      let pContent = document.createElement('p');
+      pContent.innerText = item.content;
+      divCardBody.appendChild(pContent);
+
+      let pDate = document.createElement('p');
+      let time = new Date(item.lastTime);
+      time = time.toLocaleDateString("pt-BR");
+      pDate.innerText = "Última alteração : "+time;
+      divCardBody.appendChild(pDate);
+    })
   };
 
-  //Pegar o list note e percorrer lista por lista e comparar e quando achar substituir o objeto
+  listNotes();
+
