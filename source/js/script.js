@@ -18,6 +18,7 @@ addNote.addEventListener('click', (evt)=> {
 
 btnCloseModal.addEventListener('click', (evt) =>{
   evt.preventDefault();
+  listNotes();
   modal.style.display='none';
   notes.style.display = 'flex';
   addNote.style.display = 'block';
@@ -34,9 +35,12 @@ btnSaveNote.addEventListener('click', (evt) => {
   saveNote(objNote);
 });
 
-  // divCard.addEventListener('click', (evt) => {
-
-  // })
+closeModalView.addEventListener('click', (evt) => {
+  evt.preventDefault();
+  modalView.style.display = 'none';
+  notes.style.display = 'flex';
+  addNote.style.display = 'block';
+});
 
 
 //++++++++++++++  FUNÇÕES +++++++++++++++//
@@ -73,14 +77,16 @@ btnSaveNote.addEventListener('click', (evt) => {
     return listNotes;
   }
 
+  
   const listNotes = () => {
+    notes.innerHTML= "";
     let listNotes = loadNotes();
     listNotes.forEach((item) => {
       let divCard = document.createElement('div');
       divCard.className = 'card';
       divCard.style.width = '18rem';
       notes.appendChild(divCard);
-
+      
       let divCardBody = document.createElement('div');
       divCardBody.className = "card-body";
       divCard.appendChild(divCardBody);
@@ -88,18 +94,58 @@ btnSaveNote.addEventListener('click', (evt) => {
       let h1 = document.createElement('h1');
       h1.innerText = item.title;
       divCardBody.appendChild(h1);
-
+      
       let pContent = document.createElement('p');
       pContent.innerText = item.content;
       divCardBody.appendChild(pContent);
-
+      
       let pDate = document.createElement('p');
       let time = new Date(item.lastTime);
       time = time.toLocaleDateString("pt-BR");
       pDate.innerText = "Última alteração : "+time;
       divCardBody.appendChild(pDate);
+      divCard.addEventListener('click', (evt) => {
+        evt.preventDefault();
+        showNote(item);
+      });
     })
-  };
+};
+
+  const showNote = (note) => {
+    document.querySelector('#title-note').innerHTML = "<h1>"+note.title+"</h1>"
+    document.querySelector('#content-note').innerHTML = "<p>"+note.content+"</p>"
+    document.querySelector('#title-note').innerHTML += "<p>Última alteração:"+new Date (note.lastTime).toDateString("pt-BR")+"</p>"
+    document.querySelector('#controls-note').innerHTML = "";
+
+    aDelete.addEventListener('click', (evt) => {
+      evt.preventDefault();
+      deleteNote(note.id);
+    });
+
+    let aDelete = document.createElement('a');
+    let i = document.createElement('i');
+    i.style.color = "#F00";
+    i.className = "bi";
+    i.className = "bi-trash";
+    aDelete.appendChild(i);
+    document.querySelector('#controls-note').appendChild(aDelete);
+
+    modalView.style.display = 'block';
+    notes.style.display = 'none';
+    addNote.style.display = 'none';
+    }
+
+    const deleteNote = (id) => {
+      let listNotes = loadNotes();
+      listNotes.forEach(note , i) => {
+        id (note.id === id) {
+          listNotes.splice(i);
+        }
+      }
+      listNotes = JSON.stringify();
+      localStorage.setItem('notes', listNotes);
+    };
+
 
   listNotes();
 
