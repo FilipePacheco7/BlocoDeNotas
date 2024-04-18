@@ -13,6 +13,9 @@ addNote.addEventListener('click', (evt) => {
   modal.style.display = 'block';
   notes.style.display = 'none';
   addNote.style.display = 'none';
+  document.querySelector("#input-id").value = "";
+  document.querySelector("#input-title").value = "";
+  document.querySelector("#input-content").value = "";
 });
 
 btnCloseModal.addEventListener('click', (evt) => {
@@ -137,11 +140,13 @@ const showNoteDetails = (note) => {
 };
 
 const deleteNote = (id) => {
-  let listNotes = loadNotes();
-  listNotes = listNotes.filter(note => note.id !== id);
-  listNotes = JSON.stringify(listNotes);
-  localStorage.setItem('notes', listNotes);
+  let noteDelete = loadNotes(); 
+  noteDelete = noteDelete.filter(note => note.id !== id); 
+  localStorage.setItem('notes', JSON.stringify(noteDelete));
   listNotes();
+  modalView.style.display='none';
+  addNote.style.display = 'block';
+  notes.style.display = 'flex';
 };
 
 const editNote = (note) => {
