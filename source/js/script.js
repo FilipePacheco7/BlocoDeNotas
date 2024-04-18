@@ -8,30 +8,28 @@ let btnCloseModal = document.querySelector("#btn-close-note");//icone para fecha
 
 //++++++++++++++  EVENTOS +++++++++++++++//
 
-addNote.addEventListener('click', (evt)=> {
+addNote.addEventListener('click', (evt) => {
   evt.preventDefault();
-  modal.style.display='block';
-  console.log(notes);
+  modal.style.display = 'block';
   notes.style.display = 'none';
-  addNote.style.display = 'none'; 
+  addNote.style.display = 'none';
 });
 
-btnCloseModal.addEventListener('click', (evt) =>{
+btnCloseModal.addEventListener('click', (evt) => {
   evt.preventDefault();
   listNotes();
-  modal.style.display='none';
+  modal.style.display = 'none';
   notes.style.display = 'flex';
   addNote.style.display = 'block';
 });
 
 btnSaveNote.addEventListener('click', (evt) => {
   evt.preventDefault();
-  let objNote = {
+  const objNote = {
     id: document.querySelector("#input-id").value.trim(),
-    title:document.querySelector("#input-title").value.trim(),
-    content:document.querySelector("#input-content").value.trim()
+    title: document.querySelector("#input-title").value.trim(),
+    content: document.querySelector("#input-content").value.trim()
   };
-  console.log(objNote);
   saveNote(objNote);
 });
 
@@ -42,110 +40,118 @@ closeModalView.addEventListener('click', (evt) => {
   addNote.style.display = 'block';
 });
 
-
 //++++++++++++++  FUNÇÕES +++++++++++++++//
 
-  const saveNote = (note) => {
-    let listNotes = loadNotes();
+const saveNote = (note) => {
+  let listNotes = loadNotes();
 
-    if(note.id.length < 1){
-      note.id = new Date().getTime();
-      document.querySelector('#input-id').value = note.id;
-      listNotes.push(note);
-    } else {
-      console.log(note.id);
-      listNotes.forEach((item, i) => {
-          if (item.id == note.id) {
-            listNotes[i] = note;
-          }
-      }); 
-    }
-    note.lastTime = new Date().getTime();
-    console.log(listNotes);
-    listNotes = JSON.stringify(listNotes);
-    localStorage.setItem('notes', listNotes);
-  };
-
-  const loadNotes = () => {
-    let listNotes = localStorage.getItem('notes');
-    console.log(listNotes);
-    if (!listNotes){
-      listNotes = [];
-    } else {
-      listNotes = JSON.parse(listNotes);
-    }
-    return listNotes;
+  if (note.id.length < 1) {
+    note.id = new Date().getTime();
+    document.querySelector('#input-id').value = note.id;
+    listNotes.push(note);
+  } else {
+    listNotes.forEach((item, i) => {
+      if (item.id == note.id) {
+        listNotes[i] = note;
+      }
+    });
   }
-
-  
-  const listNotes = () => {
-    notes.innerHTML= "";
-    let listNotes = loadNotes();
-    listNotes.forEach((item) => {
-      let divCard = document.createElement('div');
-      divCard.className = 'card';
-      divCard.style.width = '18rem';
-      notes.appendChild(divCard);
-      
-      let divCardBody = document.createElement('div');
-      divCardBody.className = "card-body";
-      divCard.appendChild(divCardBody);
-      
-      let h1 = document.createElement('h1');
-      h1.innerText = item.title;
-      divCardBody.appendChild(h1);
-      
-      let pContent = document.createElement('p');
-      pContent.innerText = item.content;
-      divCardBody.appendChild(pContent);
-      
-      let pDate = document.createElement('p');
-      let time = new Date(item.lastTime);
-      time = time.toLocaleDateString("pt-BR");
-      pDate.innerText = "Última alteração : "+time;
-      divCardBody.appendChild(pDate);
-      divCard.addEventListener('click', (evt) => {
-        evt.preventDefault();
-        showNote(item);
-      });
-    })
+  note.lastTime = new Date().getTime();
+  listNotes = JSON.stringify(listNotes);
+  localStorage.setItem('notes', listNotes);
 };
 
-  const showNote = (note) => {
-    document.querySelector('#title-note').innerHTML = "<h1>"+note.title+"</h1>"
-    document.querySelector('#content-note').innerHTML = "<p>"+note.content+"</p>"
-    document.querySelector('#title-note').innerHTML += "<p>Última alteração:"+new Date (note.lastTime).toDateString("pt-BR")+"</p>"
-    document.querySelector('#controls-note').innerHTML = "";
+const loadNotes = () => {
+  let listNotes = localStorage.getItem('notes');
+  if (!listNotes) {
+    listNotes = [];
+  } else {
+    listNotes = JSON.parse(listNotes);
+  }
+  return listNotes;
+};
 
-    aDelete.addEventListener('click', (evt) => {
-      evt.preventDefault();
-      deleteNote(note.id);
+const listNotes = () => {
+  notes.innerHTML = "";
+  const list = loadNotes();
+  list.forEach((item) => {
+    const divCard = document.createElement('div');
+    divCard.className = 'card';
+    divCard.style.width = '18rem';
+    notes.appendChild(divCard);
+
+    const divCardBody = document.createElement('div');
+    divCardBody.className = "card-body";
+    divCard.appendChild(divCardBody);
+
+    const h1 = document.createElement('h1');
+    h1.innerText = item.title;
+    divCardBody.appendChild(h1);
+
+    const pContent = document.createElement('p');
+    pContent.innerText = item.content;
+    divCardBody.appendChild(pContent);
+
+    const pDate = document.createElement('p');
+    const time = new Date(item.lastTime);
+    pDate.innerText = "Última alteração : " + time.toLocaleDateString("pt-BR");
+    divCardBody.appendChild(pDate);
+
+    divCard.addEventListener('click', () => {
+      showNoteDetails(item);
     });
+  });
+};
 
-    let aDelete = document.createElement('a');
-    let i = document.createElement('i');
-    i.style.color = "#F00";
-    i.className = "bi";
-    i.className = "bi-trash";
-    aDelete.appendChild(i);
-    document.querySelector('#controls-note').appendChild(aDelete);
+const showNoteDetails = (note) => {
+  document.querySelector('#title-note').innerHTML = "<h1>" + note.title + "</h1>";
+  document.querySelector('#content-note').innerHTML = "<p>" + note.content + "</p>";
+  document.querySelector('#title-note').innerHTML += "<p>Última alteração:" + new Date(note.lastTime).toLocaleDateString("pt-BR") + "</p>";
+  document.querySelector('#controls-note').innerHTML = "";
 
-    modalView.style.display = 'block';
-    notes.style.display = 'none';
-    addNote.style.display = 'none';
-    }
+  const aDelete = document.createElement('a');
+  const iDelete = document.createElement('i');
+  iDelete.style.color = "#F00";
+  iDelete.className = "bi bi-trash";
+  aDelete.appendChild(iDelete);
+  aDelete.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    deleteNote(note.id);
+  });
 
-    const deleteNote = (id) => {
-      let listNotes = loadNotes();
-      listNotes.forEach(note , i) => {
-        id (note.id === id) {
-          listNotes.splice(i);
-        }
-      }
-      listNotes = JSON.stringify();
-      localStorage.setItem('notes', listNotes);
-    };
+  const aEdit = document.createElement('a');
+  const iEdit = document.createElement('i');
+  iEdit.style.color = "#00FF00";
+  iEdit.className = "bi bi-pen";
+  aEdit.appendChild(iEdit);
+  aEdit.addEventListener('click', () => {
+    editNote(note);
+  });
 
+  document.querySelector('#controls-note').appendChild(aDelete);
+  document.querySelector('#controls-note').appendChild(aEdit);
 
+  modalView.style.display = 'block';
+  notes.style.display = 'none';
+  addNote.style.display = 'none';
+};
+
+const deleteNote = (id) => {
+  let listNotes = loadNotes();
+  listNotes = listNotes.filter(note => note.id !== id);
+  listNotes = JSON.stringify(listNotes);
+  localStorage.setItem('notes', listNotes);
   listNotes();
+};
 
+const editNote = (note) => {
+  document.querySelector("#input-id").value = note.id;
+  document.querySelector("#input-title").value = note.title;
+  document.querySelector("#input-content").value = note.content;
+  modal.style.display = 'block';
+  addNote.style.display = 'none';
+  notes.style.display = 'none';
+  modalView.style.display = 'none';
+};
+
+listNotes();
