@@ -107,9 +107,9 @@ const listNotes = () => {
 };
 
 const showNoteDetails = (note) => {
-  document.querySelector('#title-note').innerHTML = "<h1>" + note.title + "</h1>";
-  document.querySelector('#content-note').innerHTML = "<p>" + note.content + "</p>";
-  document.querySelector('#title-note').innerHTML += "<p>Última alteração:" + new Date(note.lastTime).toLocaleDateString("pt-BR") + "</p>";
+  document.querySelector('#title-note').innerHTML = "<h1 style='color: #FFFFFF;'>" + note.title + "</h1>";
+  document.querySelector('#content-note').innerHTML = "<p style='color: #FFFFFF;'>" + note.content + "</p>";
+  document.querySelector('#title-note').innerHTML += "<p style='color: #FFFFFF;'>Última alteração: " + new Date(note.lastTime).toLocaleDateString("pt-BR") + "</p>";
   document.querySelector('#controls-note').innerHTML = "";
 
   const aDelete = document.createElement('a');
@@ -133,6 +133,7 @@ const showNoteDetails = (note) => {
 
   document.querySelector('#controls-note').appendChild(aDelete);
   document.querySelector('#controls-note').appendChild(aEdit);
+  document.querySelector('#close-modal').querySelector('i').style.color = '#FFFFFF';
 
   modalView.style.display = 'block';
   notes.style.display = 'none';
